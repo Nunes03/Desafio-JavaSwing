@@ -10,6 +10,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     
+    public boolean existeSala = false, existeEspacoCafe = false;
+    public int tamanhoSalaEvento, tamanhoEspacoCafe, quantidadeDePessoasSala, quantidadeDePessoasEspaco;
+    public int variavelCafe, variavelSala;
+    
+    /*------------------------------------Consultar Sala Evento--------------------------------------------------------------*/
     public void consultarSalaDoEvento(){
         String sql = "select nome from sala_do_evento where nome like ?";
         
@@ -28,7 +33,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             System.out.println(e);
         }
     }
+    /*--------------------------------------------------------------------------------------------------*/
     
+    /*----------------------------------Inserir Sala Evento----------------------------------------------------------------*/
     public void insertSalasDoEvento(){
         String sql = "insert into sala_do_evento (nome, lotacao) values (?,?)";
         try {
@@ -41,7 +48,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             System.out.println(e);
         }
     }
+    /*--------------------------------------------------------------------------------------------------*/
     
+    /*--------------------------------------Inserir Espaco Café------------------------------------------------------------*/
     public void insertEspacosCafe(){
         String sql = "insert into espaco_cafe (nome, lotacao) values (?,?)";
         try {
@@ -56,16 +65,172 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
     /*--------------------------------------------------------------------------------------------------*/
     
+    /*----------------------------------------Insert Pessoa----------------------------------------------------------*/
     public void insertPessoas(){
         String sql = "insert into pessoa (nome, sobrenome, espaco_cafe_id, sala_do_evento_id) values (?, ?, ?, ?)";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtNomePessoa.getText());
             pst.setString(2, txtSobrenomePessoa.getText());
-            pst.setInt(3, Integer.parseInt(txtEspacoCafePessoa.getText()));
-            pst.setInt(4, Integer.parseInt(txtSalaPessoa.getText()));
+            pst.setInt(3, variavelCafe);
+            pst.setInt(4, variavelSala);
             
             pst.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*---------------------------------------Veriifca Sala-----------------------------------------------------------*/
+    public void existeSala(){
+        String sql = "select nome from sala_do_evento where nome = ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtSalaPessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                existeSala = true;
+            } else {
+                existeSala = false;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*----------------------------------------Verifica Espaço Café----------------------------------------------------------*/
+    public void existeEspaco(){
+        String sql = "select nome from espaco_cafe where nome = ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtEspacoCafePessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                existeEspacoCafe = true;
+            } else {
+                existeEspacoCafe = false;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*----------------------------------------Tamanho da Sala----------------------------------------------------------*/
+    public void tamanhoSala(){
+        String sql = "select lotacao from sala_do_evento where nome = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtSalaPessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                tamanhoSalaEvento = rs.getInt("lotacao");
+            }
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*----------------------------------------Tamanho do Espaço Café----------------------------------------------------------*/
+    public void tamanhoEspaco(){
+        String sql = "select lotacao from espaco_cafe where nome = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtEspacoCafePessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                tamanhoEspacoCafe = rs.getInt("lotacao");
+            }
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*----------------------------------------Sala Cheia----------------------------------------------------------*/
+    public void salaCheia(){
+        String sql = "select count(pessoa.id) from pessoa inner join sala_do_evento on pessoa.sala_do_evento_id = sala_do_evento.id where sala_do_evento.nome = ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtSalaPessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                quantidadeDePessoasSala = rs.getInt("count(pessoa.id)");
+            } 
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*----------------------------------------Espaco Café Cheio----------------------------------------------------------*/
+    public void espacoCafeCheio(){
+        String sql = "select count(pessoa.id) from pessoa inner join espaco_cafe on pessoa.espaco_cafe_id = espaco_cafe.id where espaco_cafe.nome = ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtEspacoCafePessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                quantidadeDePessoasEspaco = rs.getInt("count(pessoa.id)");
+            } 
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    public void verificaSala(){
+        String sql = "select id from sala_do_evento where nome = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtSalaPessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                variavelSala = rs.getInt("sala_do_evento.id");
+            } 
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
+    public void verificaEspaco(){
+        String sql = "select id from espaco_cafe where nome = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtEspacoCafePessoa.getText());
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                variavelCafe = rs.getInt("espaco_cafe.id");
+            } 
+            
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -1015,24 +1180,40 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         String nomePessoa = txtNomePessoa.getText();
         String sobreNomePessoa = txtSobrenomePessoa.getText();
-        
-        try{
-            int salaPessoa = Integer.parseInt(txtSalaPessoa.getText());
-            int espacoCafePessoa = Integer.parseInt(txtEspacoCafePessoa.getText());
+        String salaPessoa = txtSalaPessoa.getText();
+        String espacoCafePessoa = txtEspacoCafePessoa.getText();
+        existeSala();
+        existeEspaco();
             
-            if(nomePessoa.isEmpty() || sobreNomePessoa.isEmpty() || salaPessoa == 0 || espacoCafePessoa == 0){
-                lblMensagemErroPessoa.setText("Campos inválidos!");
-                lblMensagemErroPessoa.setForeground(Color.red);
-            } else{
-                lblMensagemErroPessoa.setText("Salvo com sucesso!");
-                lblMensagemErroPessoa.setForeground(new Color(46,189,89));
-                insertPessoas();
-            }
-            
-        } catch(NumberFormatException e){
+        if(nomePessoa.isEmpty() || sobreNomePessoa.isEmpty() || salaPessoa.isEmpty() || espacoCafePessoa.isEmpty()){
             lblMensagemErroPessoa.setText("Campos inválidos!");
             lblMensagemErroPessoa.setForeground(Color.red);
-        } 
+        } else{
+            existeSala();
+            existeEspaco();
+            verificaSala();
+            verificaEspaco();
+
+            if(existeEspacoCafe == true && existeSala == true){
+                
+                tamanhoSala();
+                tamanhoEspaco();
+                salaCheia();
+                espacoCafeCheio();
+                
+                if(quantidadeDePessoasSala >= tamanhoSalaEvento || quantidadeDePessoasEspaco >= tamanhoEspacoCafe){
+                    lblMensagemErroPessoa.setText("Salas ou Espaços de Café cheios");
+                    lblMensagemErroPessoa.setForeground(Color.red);
+                } else {
+                    insertPessoas();
+                    lblMensagemErroPessoa.setText("Salvo com sucesso!");
+                    lblMensagemErroPessoa.setForeground(new Color(46,189,89));
+                }
+            } else {
+                lblMensagemErroPessoa.setText("Salas ou Espaços de Café inválidos!");
+                lblMensagemErroPessoa.setForeground(Color.red);
+            } 
+        }   
     }//GEN-LAST:event_btnSalvarPessoaActionPerformed
 
     private void btnConsultarSalaDoEventoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarSalaDoEventoMouseEntered
