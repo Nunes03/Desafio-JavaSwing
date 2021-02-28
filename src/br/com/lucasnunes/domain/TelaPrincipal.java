@@ -10,6 +10,67 @@ public class TelaPrincipal extends javax.swing.JFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     
+    public void consultarSalaDoEvento(){
+        String sql = "select nome from sala_do_evento where nome like ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, "%"+txtNomeSalaDoEventoConsultar.getText()+"%");
+            
+            rs = pst.executeQuery();
+            
+            if(rs.next()){
+                lblTeste.setText(rs.getString("nome"));
+            } else {
+                lblTeste.setText("N deu");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
+    public void insertSalasDoEvento(){
+        String sql = "insert into sala_do_evento (nome, lotacao) values (?,?)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtNomeSalaDoEvento.getText());
+            pst.setInt(2, Integer.parseInt(txtLotacaoSalaDoEvento.getText()));
+            
+            pst.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
+    public void insertEspacosCafe(){
+        String sql = "insert into espaco_cafe (nome, lotacao) values (?,?)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtNomeEspacoCafe.getText());
+            pst.setInt(2, Integer.parseInt(txtLotacaoEspacoCafe.getText()));
+            
+            pst.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    public void insertPessoas(){
+        String sql = "insert into pessoa (nome, sobrenome, espaco_cafe_id, sala_do_evento_id) values (?, ?, ?, ?)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtNomePessoa.getText());
+            pst.setString(2, txtSobrenomePessoa.getText());
+            pst.setInt(3, Integer.parseInt(txtEspacoCafePessoa.getText()));
+            pst.setInt(4, Integer.parseInt(txtSalaPessoa.getText()));
+            
+            pst.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
     public TelaPrincipal() {
         initComponents();
         CardLayout cl = (CardLayout)panelPai.getLayout();
@@ -795,7 +856,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             .addComponent(panelPai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        setSize(new java.awt.Dimension(966, 670));
+        setSize(new java.awt.Dimension(966, 778));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -920,6 +981,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             } else{
                 lblMensagemErroSalaDoEvento.setText("Salvo com sucesso!");
                 lblMensagemErroSalaDoEvento.setForeground(new Color(46,189,89));
+                insertSalasDoEvento();
             }
             
         } catch(NumberFormatException e){
@@ -940,6 +1002,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             } else{
                 lblMensagemErroEspacosCafe.setText("Salvo com sucesso!");
                 lblMensagemErroEspacosCafe.setForeground(new Color(46,189,89));
+                insertEspacosCafe();
             }
             
         } catch(NumberFormatException e){
@@ -963,6 +1026,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             } else{
                 lblMensagemErroPessoa.setText("Salvo com sucesso!");
                 lblMensagemErroPessoa.setForeground(new Color(46,189,89));
+                insertPessoas();
             }
             
         } catch(NumberFormatException e){
@@ -991,7 +1055,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblMensagemErroSalaDoEventoConsultar.setText("Campos inválidos!");
             lblMensagemErroSalaDoEventoConsultar.setForeground(Color.red);
         } else { 
-            lblMensagemErroSalaDoEventoConsultar.setText("Salvo com sucesso!");
+            lblMensagemErroSalaDoEventoConsultar.setText("Consulta feita com sucesso!");
             lblMensagemErroSalaDoEventoConsultar.setForeground(new Color(46,189,89));
         }
     }//GEN-LAST:event_btnConsultarSalaDoEventoActionPerformed
