@@ -1,17 +1,15 @@
 package br.com.lucasnunes.domain;
-
+import java.sql.*;
+import br.com.lucasnunes.dal.ModuloDeConexao;
 import java.awt.CardLayout;
 import java.awt.Color;
 
-/**
- *
- * @author Nunes
- */
 public class TelaPrincipal extends javax.swing.JFrame {
-
-    /**
-     * Creates new form TelaPrincipal
-     */
+    
+    Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
     public TelaPrincipal() {
         initComponents();
         CardLayout cl = (CardLayout)panelPai.getLayout();
@@ -19,6 +17,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnHome.setVisible(false);
         btnCadastro.setVisible(false);
         btnConsulta.setVisible(false);
+        
+        conexao = ModuloDeConexao.conector();
     }    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -66,6 +66,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnConsultarPessoa = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         lblMensagemErroPessoaConsultar = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        lblTeste = new javax.swing.JLabel();
         panelHome = new javax.swing.JPanel();
         lblMsg1 = new javax.swing.JLabel();
         lblMsg2 = new javax.swing.JLabel();
@@ -296,7 +299,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelCadastroEspacoCafeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelCadastroEspacoCafeLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroEspacosCafe)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 424, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
                         .addComponent(btnSalvarEspacosCafe, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtLotacaoEspacoCafe, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtNomeEspacoCafe, javax.swing.GroupLayout.Alignment.LEADING)
@@ -478,7 +481,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaSalasDoEventoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelConsultaSalasDoEventoLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroSalaDoEventoConsultar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 424, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
                         .addComponent(btnConsultarSalaDoEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtNomeSalaDoEventoConsultar, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelConsultaSalasDoEventoLayout.createSequentialGroup()
@@ -545,7 +548,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaEspacoCafeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelConsultaEspacoCafeLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroEspacoCafeConsultar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 424, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
                         .addComponent(btnConsultarEspacoCafe, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtNomeEspacoCafeConsultar, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelConsultaEspacoCafeLayout.createSequentialGroup()
@@ -612,7 +615,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaPessoaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelConsultaPessoaLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroPessoaConsultar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 424, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
                         .addComponent(btnConsultarPessoa, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtNomePessoaConsultar, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelConsultaPessoaLayout.createSequentialGroup()
@@ -636,6 +639,21 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Nome", "Pessoas"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        lblTeste.setText("jLabel1");
+
         javax.swing.GroupLayout panelConsultaLayout = new javax.swing.GroupLayout(panelConsulta);
         panelConsulta.setLayout(panelConsultaLayout);
         panelConsultaLayout.setHorizontalGroup(
@@ -645,8 +663,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelConsultaSalasDoEvento, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelConsultaEspacoCafe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelConsultaPessoa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelConsultaPessoa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
+            .addGroup(panelConsultaLayout.createSequentialGroup()
+                .addGap(65, 65, 65)
+                .addComponent(lblTeste)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelConsultaLayout.setVerticalGroup(
             panelConsultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -657,7 +680,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(panelConsultaEspacoCafe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelConsultaPessoa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(251, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblTeste)
+                .addContainerGap(120, Short.MAX_VALUE))
         );
 
         panelPai.add(panelConsulta, "cardConsulta");
@@ -688,7 +715,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         panelHomeLayout.setHorizontalGroup(
             panelHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelHomeLayout.createSequentialGroup()
-                .addContainerGap(283, Short.MAX_VALUE)
+                .addContainerGap(285, Short.MAX_VALUE)
                 .addGroup(panelHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelHomeLayout.createSequentialGroup()
                         .addComponent(lblMsg6)
@@ -700,12 +727,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
                             .addComponent(lblMsg2)
                             .addComponent(lblMsg4)
                             .addComponent(lblMsg1))
-                        .addContainerGap(217, Short.MAX_VALUE))))
+                        .addContainerGap(218, Short.MAX_VALUE))))
         );
         panelHomeLayout.setVerticalGroup(
             panelHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelHomeLayout.createSequentialGroup()
-                .addContainerGap(263, Short.MAX_VALUE)
+                .addContainerGap(265, Short.MAX_VALUE)
                 .addComponent(lblMsg1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblMsg2)
@@ -713,7 +740,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(lblMsg3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblMsg4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 282, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
                 .addGroup(panelHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblMsg5)
                     .addComponent(lblMsg6))
@@ -738,14 +765,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblHamburguer, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblHamburguer, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 4, Short.MAX_VALUE)
-                .addComponent(lblHamburguer))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(lblHamburguer, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 11, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -768,7 +795,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             .addComponent(panelPai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        pack();
+        setSize(new java.awt.Dimension(966, 670));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1071,6 +1098,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblHamburguer;
     private javax.swing.JLabel lblMensagemErroEspacoCafeConsultar;
     private javax.swing.JLabel lblMensagemErroEspacosCafe;
@@ -1084,6 +1113,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lblMsg4;
     private javax.swing.JLabel lblMsg5;
     private javax.swing.JLabel lblMsg6;
+    private javax.swing.JLabel lblTeste;
     private javax.swing.JPanel panelCadastro;
     private javax.swing.JPanel panelCadastroEspacoCafe;
     private javax.swing.JPanel panelCadastroPessoa;
