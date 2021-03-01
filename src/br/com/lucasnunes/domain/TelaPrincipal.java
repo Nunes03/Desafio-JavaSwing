@@ -3,6 +3,7 @@ import java.sql.*;
 import br.com.lucasnunes.dal.ModuloDeConexao;
 import java.awt.CardLayout;
 import java.awt.Color;
+import net.proteanit.sql.DbUtils;
 
 public class TelaPrincipal extends javax.swing.JFrame {
     
@@ -14,27 +15,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public int tamanhoSalaEvento, tamanhoEspacoCafe, quantidadeDePessoasSala, quantidadeDePessoasEspaco;
     public int variavelCafe, variavelSala;
     
-    /*------------------------------------Consultar Sala Evento--------------------------------------------------------------*/
-    public void consultarSalaDoEvento(){
-        String sql = "select nome from sala_do_evento where nome like ?";
-        
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, "%"+txtNomeSalaDoEventoConsultar.getText()+"%");
-            
-            rs = pst.executeQuery();
-            
-            if(rs.next()){
-                lblTeste.setText(rs.getString("nome"));
-            } else {
-                lblTeste.setText("N deu");
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-    /*--------------------------------------------------------------------------------------------------*/
-    
     /*----------------------------------Inserir Sala Evento----------------------------------------------------------------*/
     public void insertSalasDoEvento(){
         String sql = "insert into sala_do_evento (nome, lotacao) values (?,?)";
@@ -44,7 +24,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             pst.setInt(2, Integer.parseInt(txtLotacaoSalaDoEvento.getText()));
             
             pst.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
@@ -59,13 +39,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             pst.setInt(2, Integer.parseInt(txtLotacaoEspacoCafe.getText()));
             
             pst.executeUpdate();
-        } catch (Exception e) {
+        } catch (NumberFormatException | SQLException e) {
             System.out.println(e);
         }
     }
     /*--------------------------------------------------------------------------------------------------*/
     
-    /*----------------------------------------Insert Pessoa----------------------------------------------------------*/
+    /*----------------------------------------Inserir Pessoa----------------------------------------------------------*/
     public void insertPessoas(){
         String sql = "insert into pessoa (nome, sobrenome, espaco_cafe_id, sala_do_evento_id) values (?, ?, ?, ?)";
         try {
@@ -76,13 +56,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             pst.setInt(4, variavelSala);
             
             pst.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
     /*--------------------------------------------------------------------------------------------------*/
     
-    /*---------------------------------------Veriifca Sala-----------------------------------------------------------*/
+    /*---------------------------------------Veriifca se a sala existe-----------------------------------------------------------*/
     public void existeSala(){
         String sql = "select nome from sala_do_evento where nome = ?";
         
@@ -97,13 +77,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             } else {
                 existeSala = false;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
     /*--------------------------------------------------------------------------------------------------*/
     
-    /*----------------------------------------Verifica Espaço Café----------------------------------------------------------*/
+    /*----------------------------------------Verifica se o Espaço Café existe----------------------------------------------------------*/
     public void existeEspaco(){
         String sql = "select nome from espaco_cafe where nome = ?";
         
@@ -118,7 +98,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             } else {
                 existeEspacoCafe = false;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
@@ -137,7 +117,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 tamanhoSalaEvento = rs.getInt("lotacao");
             }
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
@@ -156,13 +136,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 tamanhoEspacoCafe = rs.getInt("lotacao");
             }
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
     /*--------------------------------------------------------------------------------------------------*/
     
-    /*----------------------------------------Sala Cheia----------------------------------------------------------*/
+    /*----------------------------------------Verifica se a Sala está Cheia----------------------------------------------------------*/
     public void salaCheia(){
         String sql = "select count(pessoa.id) from pessoa inner join sala_do_evento on pessoa.sala_do_evento_id = sala_do_evento.id where sala_do_evento.nome = ?";
         
@@ -176,13 +156,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 quantidadeDePessoasSala = rs.getInt("count(pessoa.id)");
             } 
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
     /*--------------------------------------------------------------------------------------------------*/
     
-    /*----------------------------------------Espaco Café Cheio----------------------------------------------------------*/
+    /*----------------------------------------Verifica se o Espaco Café está cheio----------------------------------------------------------*/
     public void espacoCafeCheio(){
         String sql = "select count(pessoa.id) from pessoa inner join espaco_cafe on pessoa.espaco_cafe_id = espaco_cafe.id where espaco_cafe.nome = ?";
         
@@ -196,12 +176,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 quantidadeDePessoasEspaco = rs.getInt("count(pessoa.id)");
             } 
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
     /*--------------------------------------------------------------------------------------------------*/
     
+    /*---------------------------------------Verifica o id da Sala-----------------------------------------------------------*/
     public void verificaSala(){
         String sql = "select id from sala_do_evento where nome = ?";
         try {
@@ -214,11 +195,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 variavelSala = rs.getInt("sala_do_evento.id");
             } 
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }
+    /*--------------------------------------------------------------------------------------------------*/
     
+    /*---------------------------------------------Verifica o id do Espaço Café-----------------------------------------------------*/
     public void verificaEspaco(){
         String sql = "select id from espaco_cafe where nome = ?";
         try {
@@ -231,10 +214,65 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 variavelCafe = rs.getInt("espaco_cafe.id");
             } 
             
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+    /*--------------------------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------Consultar Sala pelo nome------------------------------------------*/
+    public void consultarSalaDoEvento(){
+        String sql = "select pessoa.nome 'Nome', pessoa.sobrenome 'Sobrenome', sala_do_evento.nome 'Sala' from pessoa inner join sala_do_evento on pessoa.sala_do_evento_id = sala_do_evento.id where sala_do_evento.nome like ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, "%"+txtNomeSalaDoEventoConsultar.getText()+"%");
+            
+            rs = pst.executeQuery();
+            
+            tbConsultas.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             System.out.println(e);
         }
     }
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------Consultar Sala pelo nome------------------------------------------*/
+    public void consultarEspacoCafe(){
+        String sql = "select pessoa.nome 'Nome', pessoa.sobrenome 'Sobrenome', espaco_cafe.nome 'Espaço Café' from pessoa inner join espaco_cafe on pessoa.espaco_cafe_id = espaco_cafe.id where espaco_cafe.nome like ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, "%"+txtNomeEspacoCafeConsultar.getText()+"%");
+            
+            rs = pst.executeQuery();
+            
+            tbConsultas.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------Consultar Sala pelo nome------------------------------------------*/
+    public void consultarPessoa(){
+        String sql = "select pessoa.nome 'Nome', pessoa.sobrenome 'Sobrenome', espaco_cafe.nome 'Espaço Café', sala_do_evento.nome 'Sala' from pessoa inner\n" +
+                        "join espaco_cafe on pessoa.espaco_cafe_id = espaco_cafe.id inner\n" +
+                        "join sala_do_evento on pessoa.sala_do_evento_id = sala_do_evento.id\n" +
+                        " where pessoa.nome like ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, "%"+txtNomeEspacoCafeConsultar.getText()+"%");
+            
+            rs = pst.executeQuery();
+            
+            tbConsultas.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    /*-------------------------------------------------------------------------------*/
     
     public TelaPrincipal() {
         initComponents();
@@ -293,8 +331,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         lblMensagemErroPessoaConsultar = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        lblTeste = new javax.swing.JLabel();
+        tbConsultas = new javax.swing.JTable();
         panelHome = new javax.swing.JPanel();
         lblMsg1 = new javax.swing.JLabel();
         lblMsg2 = new javax.swing.JLabel();
@@ -669,6 +706,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         txtNomeSalaDoEventoConsultar.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
         txtNomeSalaDoEventoConsultar.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(42, 169, 224), 2, true), "Nome", 0, 0, new java.awt.Font("Calibri", 0, 14))); // NOI18N
+        txtNomeSalaDoEventoConsultar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNomeSalaDoEventoConsultarKeyReleased(evt);
+            }
+        });
 
         btnConsultarSalaDoEvento.setBackground(new java.awt.Color(42, 169, 224));
         btnConsultarSalaDoEvento.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
@@ -696,7 +738,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel7.setText("Salas do Evento");
 
         lblMensagemErroSalaDoEventoConsultar.setFont(new java.awt.Font("Calibri Light", 1, 14)); // NOI18N
-        lblMensagemErroSalaDoEventoConsultar.setText("Para salvar prencha os campos corretamente.");
+        lblMensagemErroSalaDoEventoConsultar.setText("Para consultar prencha os campos corretamente.");
 
         javax.swing.GroupLayout panelConsultaSalasDoEventoLayout = new javax.swing.GroupLayout(panelConsultaSalasDoEvento);
         panelConsultaSalasDoEvento.setLayout(panelConsultaSalasDoEventoLayout);
@@ -707,7 +749,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaSalasDoEventoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelConsultaSalasDoEventoLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroSalaDoEventoConsultar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 405, Short.MAX_VALUE)
                         .addComponent(btnConsultarSalaDoEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtNomeSalaDoEventoConsultar, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelConsultaSalasDoEventoLayout.createSequentialGroup()
@@ -736,6 +778,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         txtNomeEspacoCafeConsultar.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
         txtNomeEspacoCafeConsultar.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(42, 169, 224), 2, true), "Nome", 0, 0, new java.awt.Font("Calibri", 0, 14))); // NOI18N
+        txtNomeEspacoCafeConsultar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNomeEspacoCafeConsultarKeyReleased(evt);
+            }
+        });
 
         btnConsultarEspacoCafe.setBackground(new java.awt.Color(42, 169, 224));
         btnConsultarEspacoCafe.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
@@ -763,7 +810,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel8.setText("Espaços Café");
 
         lblMensagemErroEspacoCafeConsultar.setFont(new java.awt.Font("Calibri Light", 1, 14)); // NOI18N
-        lblMensagemErroEspacoCafeConsultar.setText("Para salvar prencha os campos corretamente.");
+        lblMensagemErroEspacoCafeConsultar.setText("Para consultar prencha os campos corretamente.");
 
         javax.swing.GroupLayout panelConsultaEspacoCafeLayout = new javax.swing.GroupLayout(panelConsultaEspacoCafe);
         panelConsultaEspacoCafe.setLayout(panelConsultaEspacoCafeLayout);
@@ -774,7 +821,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaEspacoCafeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelConsultaEspacoCafeLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroEspacoCafeConsultar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 405, Short.MAX_VALUE)
                         .addComponent(btnConsultarEspacoCafe, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtNomeEspacoCafeConsultar, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelConsultaEspacoCafeLayout.createSequentialGroup()
@@ -803,6 +850,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         txtNomePessoaConsultar.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
         txtNomePessoaConsultar.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(42, 169, 224), 2, true), "Nome", 0, 0, new java.awt.Font("Calibri", 0, 14))); // NOI18N
+        txtNomePessoaConsultar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNomePessoaConsultarKeyReleased(evt);
+            }
+        });
 
         btnConsultarPessoa.setBackground(new java.awt.Color(42, 169, 224));
         btnConsultarPessoa.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
@@ -830,7 +882,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel9.setText("Pessoa");
 
         lblMensagemErroPessoaConsultar.setFont(new java.awt.Font("Calibri Light", 1, 14)); // NOI18N
-        lblMensagemErroPessoaConsultar.setText("Para salvar prencha os campos corretamente.");
+        lblMensagemErroPessoaConsultar.setText("Para consultar prencha os campos corretamente.");
 
         javax.swing.GroupLayout panelConsultaPessoaLayout = new javax.swing.GroupLayout(panelConsultaPessoa);
         panelConsultaPessoa.setLayout(panelConsultaPessoaLayout);
@@ -841,7 +893,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(panelConsultaPessoaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelConsultaPessoaLayout.createSequentialGroup()
                         .addComponent(lblMensagemErroPessoaConsultar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 427, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 405, Short.MAX_VALUE)
                         .addComponent(btnConsultarPessoa, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtNomePessoaConsultar, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelConsultaPessoaLayout.createSequentialGroup()
@@ -865,7 +917,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbConsultas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -876,9 +928,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 "Nome", "Pessoas"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-
-        lblTeste.setText("jLabel1");
+        jScrollPane1.setViewportView(tbConsultas);
 
         javax.swing.GroupLayout panelConsultaLayout = new javax.swing.GroupLayout(panelConsulta);
         panelConsulta.setLayout(panelConsultaLayout);
@@ -892,10 +942,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addComponent(panelConsultaPessoa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1))
                 .addContainerGap())
-            .addGroup(panelConsultaLayout.createSequentialGroup()
-                .addGap(65, 65, 65)
-                .addComponent(lblTeste)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelConsultaLayout.setVerticalGroup(
             panelConsultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -908,9 +954,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(panelConsultaPessoa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblTeste)
-                .addContainerGap(120, Short.MAX_VALUE))
+                .addContainerGap(145, Short.MAX_VALUE))
         );
 
         panelPai.add(panelConsulta, "cardConsulta");
@@ -1025,6 +1069,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    /*-------------------------------------------------------------------------------*/
     private void lblHamburguerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblHamburguerMouseClicked
         // TODO add your handling code here:
         Color corLblHamburguer = lblHamburguer.getBackground();
@@ -1042,7 +1087,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblHamburguer.setBackground(new Color(255, 255, 255));
         }
     }//GEN-LAST:event_lblHamburguerMouseClicked
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnCadastroMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCadastroMouseEntered
         // TODO add your handling code here:
         btnCadastro.setBackground(new Color(255,255,255));
@@ -1055,31 +1102,39 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnCadastro.setBackground(new Color(42,169,224));
         btnCadastro.setForeground(Color.WHITE);
     }//GEN-LAST:event_btnCadastroMouseExited
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnConsultaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultaMouseEntered
         // TODO add your handling code here:
         btnConsulta.setBackground(new Color(255,255,255));
         btnConsulta.setForeground(Color.BLACK);
     }//GEN-LAST:event_btnConsultaMouseEntered
-
+    
     private void btnConsultaMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultaMouseExited
         // TODO add your handling code here:
         btnConsulta.setBackground(new Color(42,169,224));
         btnConsulta.setForeground(Color.WHITE);
     }//GEN-LAST:event_btnConsultaMouseExited
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroActionPerformed
         // TODO add your handling code here:
         CardLayout cl = (CardLayout)panelPai.getLayout();
         cl.show(panelPai, "cardCadastro");
     }//GEN-LAST:event_btnCadastroActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaActionPerformed
         // TODO add your handling code here:
         CardLayout cl = (CardLayout)panelPai.getLayout();
         cl.show(panelPai, "cardConsulta");
     }//GEN-LAST:event_btnConsultaActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnHomeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHomeMouseEntered
         // TODO add your handling code here:
         btnHome.setBackground(new Color(255,255,255));
@@ -1091,13 +1146,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnHome.setBackground(new Color(42,169,224));
         btnHome.setForeground(Color.WHITE);
     }//GEN-LAST:event_btnHomeMouseExited
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
         // TODO add your handling code here:
         CardLayout cl = (CardLayout)panelPai.getLayout();
         cl.show(panelPai, "cardHome");
     }//GEN-LAST:event_btnHomeActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnSalvarSalaDoEventoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSalvarSalaDoEventoMouseEntered
         // TODO add your handling code here:
         btnSalvarSalaDoEvento.setBackground(Color.white);
@@ -1109,7 +1168,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnSalvarSalaDoEvento.setBackground(new Color(42,169,224));
         btnSalvarSalaDoEvento.setForeground(Color.white);
     }//GEN-LAST:event_btnSalvarSalaDoEventoMouseExited
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnSalvarEspacosCafeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSalvarEspacosCafeMouseExited
         // TODO add your handling code here:
         btnSalvarEspacosCafe.setBackground(new Color(42,169,224));
@@ -1121,7 +1182,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnSalvarEspacosCafe.setBackground(Color.white);
         btnSalvarEspacosCafe.setForeground(new Color(42,169,224));
     }//GEN-LAST:event_btnSalvarEspacosCafeMouseEntered
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnSalvarPessoaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSalvarPessoaMouseEntered
         // TODO add your handling code here:
         btnSalvarPessoa.setBackground(Color.white);
@@ -1133,7 +1196,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnSalvarPessoa.setBackground(new Color(42,169,224));
         btnSalvarPessoa.setForeground(Color.white);
     }//GEN-LAST:event_btnSalvarPessoaMouseExited
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnSalvarSalaDoEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarSalaDoEventoActionPerformed
         // TODO add your handling code here:
         String nomeSalaDoEvento = txtNomeSalaDoEvento.getText();
@@ -1154,7 +1219,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblMensagemErroSalaDoEvento.setForeground(Color.red);
         } 
     }//GEN-LAST:event_btnSalvarSalaDoEventoActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnSalvarEspacosCafeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarEspacosCafeActionPerformed
         // TODO add your handling code here:
         String nomeEspacoCafe = txtNomeEspacoCafe.getText();
@@ -1175,7 +1242,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblMensagemErroEspacosCafe.setForeground(Color.red);
         } 
     }//GEN-LAST:event_btnSalvarEspacosCafeActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnSalvarPessoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarPessoaActionPerformed
         // TODO add your handling code here:
         String nomePessoa = txtNomePessoa.getText();
@@ -1215,7 +1284,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             } 
         }   
     }//GEN-LAST:event_btnSalvarPessoaActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnConsultarSalaDoEventoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarSalaDoEventoMouseEntered
         // TODO add your handling code here:
         btnConsultarSalaDoEvento.setBackground(Color.white);
@@ -1236,11 +1307,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblMensagemErroSalaDoEventoConsultar.setText("Campos inválidos!");
             lblMensagemErroSalaDoEventoConsultar.setForeground(Color.red);
         } else { 
+            consultarSalaDoEvento();
             lblMensagemErroSalaDoEventoConsultar.setText("Consulta feita com sucesso!");
             lblMensagemErroSalaDoEventoConsultar.setForeground(new Color(46,189,89));
         }
     }//GEN-LAST:event_btnConsultarSalaDoEventoActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnConsultarEspacoCafeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarEspacoCafeMouseEntered
         // TODO add your handling code here:
         btnConsultarEspacoCafe.setBackground(Color.white);
@@ -1261,11 +1335,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblMensagemErroEspacoCafeConsultar.setText("Campos inválidos!");
             lblMensagemErroEspacoCafeConsultar.setForeground(Color.red);
         } else { 
-            lblMensagemErroEspacoCafeConsultar.setText("Salvo com sucesso!");
+            consultarEspacoCafe();
+            lblMensagemErroEspacoCafeConsultar.setText("Consulta feita com sucesso!");
             lblMensagemErroEspacoCafeConsultar.setForeground(new Color(46,189,89));
         }
     }//GEN-LAST:event_btnConsultarEspacoCafeActionPerformed
-
+    /*-------------------------------------------------------------------------------*/
+    
+    /*-------------------------------------------------------------------------------*/
     private void btnConsultarPessoaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarPessoaMouseEntered
         // TODO add your handling code here:
         btnConsultarPessoa.setBackground(Color.white);
@@ -1286,14 +1363,28 @@ public class TelaPrincipal extends javax.swing.JFrame {
             lblMensagemErroPessoaConsultar.setText("Campos inválidos!");
             lblMensagemErroPessoaConsultar.setForeground(Color.red);
         } else { 
-            lblMensagemErroPessoaConsultar.setText("Salvo com sucesso!");
+            consultarPessoa();
+            lblMensagemErroPessoaConsultar.setText("Consulta feita com sucesso!");
             lblMensagemErroPessoaConsultar.setForeground(new Color(46,189,89));
         }
     }//GEN-LAST:event_btnConsultarPessoaActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void txtNomeSalaDoEventoConsultarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomeSalaDoEventoConsultarKeyReleased
+        // TODO add your handling code here:
+        consultarSalaDoEvento();
+    }//GEN-LAST:event_txtNomeSalaDoEventoConsultarKeyReleased
+
+    private void txtNomeEspacoCafeConsultarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomeEspacoCafeConsultarKeyReleased
+        // TODO add your handling code here:
+        consultarEspacoCafe();
+    }//GEN-LAST:event_txtNomeEspacoCafeConsultarKeyReleased
+
+    private void txtNomePessoaConsultarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomePessoaConsultarKeyReleased
+        // TODO add your handling code here:
+        consultarPessoa();
+    }//GEN-LAST:event_txtNomePessoaConsultarKeyReleased
+    /*-------------------------------------------------------------------------------*/
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -1307,22 +1398,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        
+        //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TelaPrincipal().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new TelaPrincipal().setVisible(true);
         });
     }
 
@@ -1344,7 +1429,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblHamburguer;
     private javax.swing.JLabel lblMensagemErroEspacoCafeConsultar;
     private javax.swing.JLabel lblMensagemErroEspacosCafe;
@@ -1358,7 +1442,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lblMsg4;
     private javax.swing.JLabel lblMsg5;
     private javax.swing.JLabel lblMsg6;
-    private javax.swing.JLabel lblTeste;
     private javax.swing.JPanel panelCadastro;
     private javax.swing.JPanel panelCadastroEspacoCafe;
     private javax.swing.JPanel panelCadastroPessoa;
@@ -1370,6 +1453,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel panelHome;
     private javax.swing.JPanel panelPai;
     private javax.swing.JPanel panelPrincipal;
+    private javax.swing.JTable tbConsultas;
     private javax.swing.JTextField txtEspacoCafePessoa;
     private javax.swing.JTextField txtLotacaoEspacoCafe;
     private javax.swing.JTextField txtLotacaoSalaDoEvento;
