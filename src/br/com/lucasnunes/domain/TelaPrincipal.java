@@ -919,15 +919,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         tbConsultas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null},
+                {null},
+                {null},
+                {null}
             },
             new String [] {
-                "Nome", "Pessoas"
+                "Título 1"
             }
         ));
+        tbConsultas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tbConsultasKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbConsultas);
 
         javax.swing.GroupLayout panelConsultaLayout = new javax.swing.GroupLayout(panelConsulta);
@@ -1383,6 +1388,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         consultarPessoa();
     }//GEN-LAST:event_txtNomePessoaConsultarKeyReleased
+
+    private void tbConsultasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbConsultasKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tbConsultasKeyReleased
     /*-------------------------------------------------------------------------------*/
     
     public static void main(String args[]) {
